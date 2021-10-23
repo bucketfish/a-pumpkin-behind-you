@@ -22,20 +22,26 @@ var cutscenes = [
 
 var state = "idle"
 
+var startend = preload("res://startend.png")
+onready var thatcanvas = $startend/Node2D
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	$CanvasLayer/ColorRect.modulate = "#ffffffff"
+	anim.play_backwards("fade")
 	
 	state = "idle"
 	cutscenecam.current = true
-	yield(get_tree().create_timer(1), "timeout")
-	
+	sprite.texture = null
+	thatcanvas.visible = true
+	$startend.set_start()
+	yield(dialogue, "click_next")
 	start_game()
 
 func start_game():
+	anim.play("fade")
+	yield(anim, "animation_finished")
+	thatcanvas.visible = false
 	dialogue.play("start")
-	
-	
 	playercam.current = true
 	state = "play"
 
@@ -54,7 +60,7 @@ func show_cutscene(num):
 		yield(anim, "animation_finished")
 	
 func stop_cutscene():
-	if $CanvasLayer/ColorRect.modulate == Color("#ffffff00"):
+	if $CanvasLayer/ColorRect.modulate == Color("#00ffffff"):
 		anim.play("fade")
 		yield(anim, "animation_finished")
 	playercam.current = true
@@ -66,7 +72,10 @@ func stop_cutscene():
 func end_game():
 	anim.play("fade")
 	yield(anim, "animation_finished")
-
+	$startend.set_end()
+	thatcanvas.visible = true
+	anim.play_backwards("fade")
+	
 	#sprite.texture = null
 
 	

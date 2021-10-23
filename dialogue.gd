@@ -3,7 +3,7 @@ extends Node2D
 
 var lines = {
 	"start":[
-		["t", "press up arrow or enter to continue)", "n"],
+		#["t", "press up arrow or enter to continue)", "n"],
 		["t", "happy halloween!!! it's trick or treat day!!", "c"],
 		["t", "my only goal for today is to get some candy.", "c"],
 		["t", "you can do it!!!!", "p"]
@@ -89,6 +89,7 @@ var lines = {
 		["t", "omg!!!!", "c"],
 		["t", "...", "c"],
 		["t", "... you knew this already, didn't you?", "c"],
+		["t", "did you put it here?", "c"],
 		["t", ".......... maybe?", "p"],
 		["t", "aw.....", "c"],
 		["t", "idk...", "p"],
@@ -112,6 +113,10 @@ signal click_next
 onready var text = $text
 onready var base = get_node("/root/base")
 
+onready var knocksound  = $knock
+onready var doorsound = $dooropen
+onready var typingsound = $typing
+
 var colors = {
 	"c": "#000000",
 	"n": "#000000",
@@ -132,16 +137,18 @@ var names = {
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	typingsound.playing = true
+	typingsound.stream_paused = true
 	visible = false
 
 func play(num):
-	visible = true
+	visible = false
 	text.text = ""
 	text.percent_visible = 0
 	if num in [1, 2, 3]:
 		yield(text_loop("all"), "completed")
 		base.anim.play_backwards("fade")
-		yield(base.anim, "animation_finished")
+		#yield(base.anim, "animation_finished")
 		
 	yield(text_loop(num), "completed")
 				
@@ -158,9 +165,16 @@ func play(num):
 func text_loop(num):
 	for i in lines[num]:
 		if i[0] == "s":
-			pass
+			if i[1] == "door_knock":
+				knocksound.playing = true
+				yield(knocksound, "finished")
+			elif i[1] == "door_open":
+				doorsound.playing = true
+				yield(doorsound, "finished")
+				
 		
 		elif i[0] == "t":
+			visible = true
 			text.percent_visible = 0
 			text.text = names[i[2]] + ": " + i[1]
 			text.modulate = colors[i[2]]
@@ -168,8 +182,10 @@ func text_loop(num):
 			var seconds = 0.02 * text.get_total_character_count()
 			$Tween.interpolate_property(text, "percent_visible", 0, 1, seconds, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 			$Tween.start()
+			typingsound.stream_paused = false
 			
 			yield($Tween, "tween_completed")
+			typingsound.stream_paused = true
 			yield(self, "click_next")
 			
 	yield(get_tree(), "idle_frame")

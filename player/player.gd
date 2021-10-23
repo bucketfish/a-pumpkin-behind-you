@@ -21,6 +21,7 @@ var state = "idle"
 onready var base = get_node("/root/base")
 onready var anim = $anim
 onready var sprite = $Sprite
+onready var walksound = $walk
 
 func _ready():
 	#turn on things, set the base
@@ -30,6 +31,7 @@ func _ready():
 func get_input(delta):
 	#if we don't want to take input, don't take input
 	if base.state != "play":
+		walksound.playing = false
 		velocity.x = 0
 		velocity.y = 0
 		return
@@ -43,9 +45,14 @@ func get_input(delta):
 		dir -= 1
 		
 	if dir == 0:
+		if state == "walk":
+			walksound.playing = false
 		state = "idle"
 	else:
+		if state == "idle":
+			walksound.playing = true
 		state = "walk"
+		
 		
 	if dir == -1:
 		sprite.flip_h = false

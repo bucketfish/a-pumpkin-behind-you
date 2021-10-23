@@ -1,13 +1,18 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://player/player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://base.gd" type="Script" id=2]
 [ext_resource path="res://cutscenes/street.png" type="Texture" id=3]
 [ext_resource path="res://cutscenes/cutscene.tscn" type="PackedScene" id=4]
+[ext_resource path="res://startend.gd" type="Script" id=5]
 [ext_resource path="res://dialogue/ninepatchrect.tscn" type="PackedScene" id=6]
 [ext_resource path="res://text.tscn" type="PackedScene" id=7]
 [ext_resource path="res://christmas lights.ttf" type="DynamicFontData" id=8]
 [ext_resource path="res://dialogue.gd" type="Script" id=9]
+[ext_resource path="res://startend.png" type="Texture" id=10]
+[ext_resource path="res://sound effects/knock.wav" type="AudioStream" id=11]
+[ext_resource path="res://sound effects/door open.wav" type="AudioStream" id=12]
+[ext_resource path="res://sound effects/text.wav" type="AudioStream" id=13]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 1071.25, 78.1308 )
@@ -17,7 +22,7 @@ extents = Vector2( 64.8175, 473.227 )
 
 [sub_resource type="Animation" id=3]
 resource_name = "fade"
-length = 0.4
+length = 0.6
 tracks/0/type = "value"
 tracks/0/path = NodePath("CanvasLayer/ColorRect:modulate")
 tracks/0/interp = 1
@@ -25,7 +30,7 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
+"times": PoolRealArray( 0, 0.6 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
 "values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
@@ -37,6 +42,31 @@ font_data = ExtResource( 8 )
 
 [sub_resource type="RectangleShape2D" id=5]
 extents = Vector2( 15.5629, 135.226 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 80
+font_data = ExtResource( 8 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 40
+font_data = ExtResource( 8 )
+
+[sub_resource type="Animation" id=8]
+resource_name = "bob"
+length = 1.4
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Node2D/text2:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.7, 1.4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 114.079, 270 ), Vector2( 114.079, 280 ), Vector2( 114.079, 270 ) ]
+}
 
 [node name="base" type="Node2D"]
 script = ExtResource( 2 )
@@ -116,7 +146,15 @@ anims/fade = SubResource( 3 )
 layer = 10
 
 [node name="dialogue" type="Node2D" parent="CanvasLayer2"]
+visible = false
 script = ExtResource( 9 )
+
+[node name="knock" type="AudioStreamPlayer" parent="CanvasLayer2/dialogue"]
+stream = ExtResource( 11 )
+
+[node name="dooropen" type="AudioStreamPlayer" parent="CanvasLayer2/dialogue"]
+stream = ExtResource( 12 )
+volume_db = -9.82
 
 [node name="NinePatchRect" parent="CanvasLayer2/dialogue" instance=ExtResource( 6 )]
 margin_left = 100.0
@@ -135,11 +173,50 @@ autowrap = true
 
 [node name="Tween" type="Tween" parent="CanvasLayer2/dialogue"]
 
+[node name="typing" type="AudioStreamPlayer" parent="CanvasLayer2/dialogue"]
+stream = ExtResource( 13 )
+stream_paused = true
+
 [node name="ending" type="Area2D" parent="."]
 position = Vector2( -1005.36, 372.342 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ending"]
 shape = SubResource( 5 )
+
+[node name="startend" type="CanvasLayer" parent="."]
+layer = 4
+script = ExtResource( 5 )
+
+[node name="Node2D" type="Node2D" parent="startend"]
+
+[node name="Sprite" type="Sprite" parent="startend/Node2D"]
+texture = ExtResource( 10 )
+centered = false
+
+[node name="text" parent="startend/Node2D" instance=ExtResource( 7 )]
+modulate = Color( 1, 1, 1, 1 )
+margin_left = 122.635
+margin_top = 92.7765
+margin_right = 504.635
+margin_bottom = 289.776
+custom_fonts/font = SubResource( 6 )
+text = "a pumpkin behind you"
+autowrap = true
+
+[node name="text2" parent="startend/Node2D" instance=ExtResource( 7 )]
+modulate = Color( 0.0352941, 0.0901961, 0.321569, 1 )
+margin_left = 114.079
+margin_top = 276.202
+margin_right = 496.079
+margin_bottom = 508.611
+custom_fonts/font = SubResource( 7 )
+text = "thank you for playing 'a pumpkin behind you'!!
+this game was made by bucketfish :)"
+autowrap = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="startend"]
+autoplay = "bob"
+anims/bob = SubResource( 8 )
 
 [connection signal="body_entered" from="ending" to="." method="_on_ending_body_entered"]
 
