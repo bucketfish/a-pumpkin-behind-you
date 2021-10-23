@@ -2,6 +2,12 @@ extends Node2D
 
 
 var lines = {
+	"start":[
+		["t", "press up arrow or enter to continue)", "n"],
+		["t", "happy halloween!!! it's trick or treat day!!", "c"],
+		["t", "my only goal for today is to get some candy.", "c"],
+		["t", "you can do it!!!!", "p"]
+	],
 	"all":[
 		["s", "door_knock", "to_end"],
 		["s", "door_open", "to_end"],
@@ -29,6 +35,25 @@ var lines = {
 		["t", "it's alright~ haters gonna hate~!", "p"]
 	],
 	2:[
+		["t", "who's there~", "j2"],
+		["t", "me! ghostcat!", "c"],
+		["t", "and pompkin!", "p"],
+		["t", "oh, hello~ let me grab my candy :)", "j2"],
+		["t", "omg!! yay!", "c"],
+		["t", "we're gonna take all of the candy!! ghostcat deserves all the candy!", "p"],
+		["t", "pompkin no! we have to leave some for others too.", "c"],
+		["t", "yea, don't take everything~", "j2"],
+		["t", "no, ghostcat deserves all!! take all of it!!!", "p"],
+		["t", "hey~! i'm not giving you candy if you take it all.", "j2"],
+		["t", "i won't! i promise.", "c"],
+		["t", "your friend says otherwise~", "j2"],
+		["t", "take all of it!!! gooo ghostcat!", "p"],
+		["t", "pompkin no!!!!!", "c"],
+		["t", "don't take all the candy >:( no candy for you!", "j2"],
+		["t", "no.... :(", "c"],
+		["t", "you should've taken it all!!!! you deserve it!!!", "p"],
+		["t", "that's not how this works, pompkin! :(", "c"],
+		["t", "....... :(", "p"]
 		
 	],
 	3:[
@@ -58,8 +83,27 @@ var lines = {
 		["t", "maybe someone dropped candy there by accident.", "p"],
 		["t", "ah... maybe. okay...", "c"]
 	],
-	"end":[
-		[]
+	4:[
+		["t", "hey!! there's a candy here!", "c"],
+		["t", "told ya!!!!!", "p"],
+		["t", "omg!!!!", "c"],
+		["t", "...", "c"],
+		["t", "... you knew this already, didn't you?", "c"],
+		["t", ".......... maybe?", "p"],
+		["t", "aw.....", "c"],
+		["t", "idk...", "p"],
+		["t", "i figured none of them would give you candy", "p"],
+		["t", "so here's one that i spent 5 days searching for!", "p"],
+		["t", "five days? wow... that's a lot.", "c"],
+		["t", "this halloween is gonna be great!", "p"],
+		["t", "thank you for making my dream come true, pompkin.", "c"],
+		["t", "np!!!! i'll always have your back!!!", "p"],
+		["t", "yea, you'll always sit on my back :)", "c"],
+		["t", "yea!!!!!", "p"],
+		["t", "oh, also this candy is like. pure sugar candy. you won't die eating it!!", "p"],
+		["t", "aaaa that's great! thank you so much...", "c"],
+		["t", "now eat it! and we can go chase kids for more!", "p"],
+		["t", "pompkin no!!!!!!!!", "c"]
 	]
 }
 
@@ -70,20 +114,21 @@ onready var base = get_node("/root/base")
 
 var colors = {
 	"c": "#000000",
+	"n": "#000000",
 	"p": "#ECAA53",
 	"j": "#74586C",
-	"j2": "#ECAA53",
+	"j2": "#74586C",
 	"l": "#61995D",
 }
 
 var names = {
 	"c": "ghostcat",
+	"n": "(note",
 	"p": "pompkin",
 	"j": "old person",
 	"j2": "witchy kid",
 	"l": "plant",
 }
-
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -91,25 +136,45 @@ func _ready():
 
 func play(num):
 	visible = true
+	text.text = ""
+	text.percent_visible = 0
+	if num in [1, 2, 3]:
+		yield(text_loop("all"), "completed")
+		base.anim.play_backwards("fade")
+		yield(base.anim, "animation_finished")
+		
+	yield(text_loop(num), "completed")
+				
+	visible = false
+	if typeof(num) == TYPE_INT:
+		if num == 4:
+			base.end_game()
+		else:
+			base.stop_cutscene()
+	else:
+		base.stop_cutscene()
+
+	
+func text_loop(num):
 	for i in lines[num]:
 		if i[0] == "s":
 			pass
 		
 		elif i[0] == "t":
-			text.visible = false
+			text.percent_visible = 0
 			text.text = names[i[2]] + ": " + i[1]
 			text.modulate = colors[i[2]]
 			
 			var seconds = 0.02 * text.get_total_character_count()
 			$Tween.interpolate_property(text, "percent_visible", 0, 1, seconds, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 			$Tween.start()
-			text.visible = true
-
+			
 			yield($Tween, "tween_completed")
 			yield(self, "click_next")
 			
-	visible = false
-	base.stop_cutscene()
+	yield(get_tree(), "idle_frame")
+	return
+
 	
 
 
