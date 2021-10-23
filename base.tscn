@@ -1,0 +1,133 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://player/player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://base.gd" type="Script" id=2]
+[ext_resource path="res://cutscenes/street.png" type="Texture" id=3]
+[ext_resource path="res://cutscenes/cutscene.tscn" type="PackedScene" id=4]
+[ext_resource path="res://dialogue/ninepatchrect.tscn" type="PackedScene" id=6]
+[ext_resource path="res://text.tscn" type="PackedScene" id=7]
+[ext_resource path="res://christmas lights.ttf" type="DynamicFontData" id=8]
+[ext_resource path="res://dialogue.gd" type="Script" id=9]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 1071.25, 78.1308 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 64.8175, 473.227 )
+
+[sub_resource type="Animation" id=3]
+resource_name = "fade"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath("CanvasLayer/ColorRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="DynamicFont" id=4]
+size = 32
+font_data = ExtResource( 8 )
+
+[node name="base" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="street" type="Sprite" parent="."]
+position = Vector2( -1024, 0 )
+texture = ExtResource( 3 )
+centered = false
+
+[node name="player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 957.913, 464.602 )
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="player"]
+remote_path = NodePath("../../playercam")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2( 27.5856, 589.504 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource( 1 )
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2( -1116.99, -269.037 )
+shape = SubResource( 2 )
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2( 1061.11, -273.473 )
+shape = SubResource( 2 )
+
+[node name="playercam" type="Camera2D" parent="."]
+position = Vector2( 957.913, 464.602 )
+current = true
+limit_left = -1024
+limit_top = 0
+limit_right = 1024
+limit_bottom = 600
+smoothing_enabled = true
+
+[node name="cutscenecam" type="Camera2D" parent="."]
+position = Vector2( 524.913, 464.602 )
+limit_left = -1024
+limit_top = 0
+limit_right = 1024
+limit_bottom = 600
+smoothing_enabled = true
+
+[node name="cutscene" parent="." instance=ExtResource( 4 )]
+position = Vector2( 735.055, 427.862 )
+num = 1
+
+[node name="cutscene2" parent="." instance=ExtResource( 4 )]
+position = Vector2( 307.672, 427.862 )
+num = 2
+
+[node name="cutscene3" parent="." instance=ExtResource( 4 )]
+position = Vector2( -495.974, 427.862 )
+num = 3
+
+[node name="Sprite" type="Sprite" parent="."]
+centered = false
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+modulate = Color( 1, 1, 1, 0 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.0352941, 0.0901961, 0.321569, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="cutscenes" type="AnimationPlayer" parent="."]
+anims/fade = SubResource( 3 )
+
+[node name="dialogue" type="Node2D" parent="."]
+script = ExtResource( 9 )
+
+[node name="NinePatchRect" parent="dialogue" instance=ExtResource( 6 )]
+margin_left = 100.0
+margin_top = 450.0
+margin_right = 924.0
+margin_bottom = 620.0
+
+[node name="text" parent="dialogue" instance=ExtResource( 7 )]
+margin_left = 147.0
+margin_top = 493.0
+margin_right = 888.0
+margin_bottom = 579.0
+custom_fonts/font = SubResource( 4 )
+text = ""
+autowrap = true
+
+[node name="Tween" type="Tween" parent="dialogue"]
+
+[editable path="dialogue/NinePatchRect"]
