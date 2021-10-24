@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://player/player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://base.gd" type="Script" id=2]
@@ -13,6 +13,7 @@
 [ext_resource path="res://sound effects/knock.wav" type="AudioStream" id=11]
 [ext_resource path="res://sound effects/door open.wav" type="AudioStream" id=12]
 [ext_resource path="res://sound effects/text.wav" type="AudioStream" id=13]
+[ext_resource path="res://skitterdaddle (pompkin ver).wav" type="AudioStream" id=14]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 1071.25, 78.1308 )
@@ -151,6 +152,7 @@ script = ExtResource( 9 )
 
 [node name="knock" type="AudioStreamPlayer" parent="CanvasLayer2/dialogue"]
 stream = ExtResource( 11 )
+volume_db = 5.803
 
 [node name="dooropen" type="AudioStreamPlayer" parent="CanvasLayer2/dialogue"]
 stream = ExtResource( 12 )
@@ -217,6 +219,11 @@ autowrap = true
 [node name="AnimationPlayer" type="AnimationPlayer" parent="startend"]
 autoplay = "bob"
 anims/bob = SubResource( 8 )
+
+[node name="soundtrack" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 14 )
+volume_db = -9.505
+autoplay = true
 
 [connection signal="body_entered" from="ending" to="." method="_on_ending_body_entered"]
 
