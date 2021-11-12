@@ -222,7 +222,7 @@ anims/bob = SubResource( 8 )
 
 [node name="soundtrack" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 14 )
-volume_db = -9.505
+volume_db = -11.387
 autoplay = true
 
 [connection signal="body_entered" from="ending" to="." method="_on_ending_body_entered"]
